@@ -1,0 +1,45 @@
+services:
+  postgres:
+    hostname: 127.0.0.1
+    container_name: dbcontainer
+    image: postgres:alpine
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      - POSTGRES_DB=ts
+      - POSTGRES_USER=tawa
+      - POSTGRES_PASSWORD=tawa1234
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - mired
+  
+  producto:
+    build: ./producto
+    container_name: productocontainer
+    ports:
+      - 5600:5000
+    restart: always
+    depends_on:
+      - postgres
+    networks:
+      - mired
+    
+  compra:
+    build: ./compras
+    container_name: compracontainer
+    ports:
+    - 5601:5001
+    restart: always
+    depends_on:
+      - postgres
+      - producto
+    networks:
+      - mired
+    
+ 
+networks:
+    mired:
+      driver: bridge
+
